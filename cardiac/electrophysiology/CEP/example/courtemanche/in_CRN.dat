@@ -1,0 +1,34 @@
+
+# Courtemanche-Ramirez-Nattel (1998) human atrial myocyte model.
+#
+# NOTE ON UNITS -- the three human myocyte models in this solver use
+# three different unit systems, so do NOT copy stimulus blocks or
+# time steps between decks:
+#   CRN (this deck): clock in ms;      stimulus amplitude in pA
+#   NYG:             clock in SECONDS; stimulus amplitude in pA
+#   TTP:             clock in ms;      stimulus amplitude in pA/pF
+# (a TTP amplitude of -38 is a density, roughly -3800 pA absolute;
+# the -2000 below is absolute pA).  Full table: include/PARAMS_CRN.f.
+#
+# The protocol below reproduces the paper's Figs. 14/15 beat: 2-ms,
+# -2 nA (twice diastolic threshold) pulses at a period of 1000 ms.
+# The paper reports the AP after 12 s of pacing from rest; this
+# example runs a single 600-ms window from rest to keep the log small.
+# For the full paper protocol set: Number of time steps: 2400000
+
+Electrophysiology model: crn {
+    CEP model parameters file path: params_crn.in
+}
+
+Time integration scheme: fe
+
+Number of time steps: 120000
+
+Time step size: 0.005     # ms
+
+Stimulus: I {
+    Amplitude: -2000.0    # pA (2 nA)
+    Start time: 0.0       # ms
+    Duration: 2.0         # ms
+    Cycle length: 1000.0  # ms
+}
