@@ -5,6 +5,8 @@
 #     Table 1.
 #
 #     Units: ms, mV, pA, pF, nS/pF, pA/pF, mM, um^3, mM/ms.
+#     These are the paper's own units and are not rescaled; see
+#     include/PARAMS_CRN.f and ../README_CEP_UNITS.md
 #
 #--------------------------------------------------------------------
 
@@ -96,8 +98,8 @@
       K_Q10 : 3.0
 
 #     Fn_rel_scale: scale on the RELEASE term of Fn (Eq. 68) only.
-#     1.0 = Eq. 68 exactly as published; 0.01 = openCARP's encoding
-#     (default).  See PARAMS_CRN.f for the full record.
+#     1.0 = Eq. 68 exactly as published; 0.01 (default) reproduces the
+#     paper's Fig. 15.  See PARAMS_CRN.f.
       Fn_rel_scale : 0.01
 
 #     Vrest: resting potential for stretch-activated currents, units: mV

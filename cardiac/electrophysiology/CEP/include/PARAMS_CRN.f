@@ -12,7 +12,9 @@
 !
 !  ------------------------- UNIT SYSTEM -------------------------
 !
-!     Units are native to the paper and must not be rescaled:
+!     Units are native to the paper.  The model is kept internally
+!     consistent with the original formulation, so these values are
+!     not rescaled:
 !
 !        time           ms
 !        voltage        mV
@@ -30,33 +32,18 @@
 !        pA / (C/mmol * um^3) = mM/ms -> I/(F*Vol) needs no extra
 !                                    conversion factor anywhere
 !
-!     BEWARE: the three human myocyte models in this solver use THREE
-!     DIFFERENT unit systems.  Do not copy stimulus blocks, time steps
-!     or parameter values between their input decks.
-!
-!                        CRN (this)     NYG           TTP
-!        time base       ms             s             ms
-!        currents        absolute pA    absolute pA   density pA/pF
-!        Cm              100 pF         0.05 nF       0.185 uF
-!        Cm's role       divides dV/dt, divides       concentration
-!                        scales g's     dV/dt only    updates only
-!        dV/dt           -(SUM I)/Cm    -(SUM I)/Cm   -(SUM I), no Cm
-!        stimulus ampl.  pA             pA            pA/pF
-!        example deck    -2000 pA,      -280 pA,      -38 pA/pF,
-!                        dt 0.005 ms    dt 0.0001 s   dt 0.1-0.2 ms
-!
-!     The time bases follow from the Cm units: pA/nF = mV/s (NYG runs
-!     in seconds), pA/pF = mV/ms (CRN runs in milliseconds); TTP's
-!     densities are already mV/ms.  A stimulus of -38 in a TTP deck is
-!     a density (~ -3800 pA absolute); -2000 here is absolute pA.
-!     For tissue simulation the conductivity follows the clock too:
-!     mm^2/ms for CRN vs mm^2/s for NYG.
+!     CAUTION: the CEP models in this solver do not share a unit
+!     system.  They differ in the clock, in whether currents are
+!     absolute or densities, and in the role Cm plays in dV/dt.  Do
+!     not copy stimulus blocks, time steps or parameter values
+!     between input decks.  The cross-model table is kept in one
+!     place: example/README_CEP_UNITS.md
 !
 !     NOTE (Eq. 68 / Fn): the currents entering Fn must be ABSOLUTE
 !     pA, not pA/pF.  Eqs. 65/66 compare Fn against 3.4175E-13, so a
 !     pA/pF implementation leaves the membrane term 100x low and SR
-!     release never fires.  This is why CRN must NOT be "harmonized"
-!     to TTP-style densities.
+!     release never fires.  This is why CRN is not harmonized to the
+!     TTP-style densities used elsewhere in the solver.
 !
 !--------------------------------------------------------------------
 !     Default model parameters
@@ -152,21 +139,12 @@
       REAL(KIND=RKIND) :: K_Q10 = 3._RKIND          ! dimensionless
 !-----------------------------------------------------------------------
 !     Fn_rel_scale: scale applied to the RELEASE term of Fn (Eq. 68)
-!     ONLY.  This is the single deliberate deviation from the published
-!     equations anywhere in this module.
+!     ONLY.  This is the single deliberate deviation from the
+!     published equations anywhere in this module; it is needed to
+!     reproduce the paper's own Fig. 15.
 !
 !        1.0   Eq. 68 exactly as published.
-!        0.01  openCARP's encoding (DEFAULT).
-!
-!     openCARP's limpet model carries C_Fn1 = 9.648e-13 where Eq. 68
-!     requires 1e-12*V_rel = 9.648e-11, i.e. the release term divided
-!     by exactly 100, with the author's comment: "I divided C_Fn1 by
-!     C_m ... to get agreement with Fn in figure 15 of the paper
-!     although I see no reason for doing so."  Fn feeds only the u and
-!     v sigmoids (Eqs. 65/66), which saturate under both settings, so
-!     APD90 differs by at most 1.2 ms of 302 (0.39%) across BCL
-!     5000/1000/500/300 ms.  See ERRATA.md in the Python reference
-!     implementation for the full record.
+!        0.01  DEFAULT; reproduces Fig. 15.
       REAL(KIND=RKIND) :: Fn_rel_scale = 0.01_RKIND ! dimensionless
 !-----------------------------------------------------------------------
 !     Resting potential, used only by the stretch-activated current

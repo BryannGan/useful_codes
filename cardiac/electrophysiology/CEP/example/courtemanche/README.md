@@ -14,34 +14,24 @@ Run:
 `Number of time steps: 2400000` for the paper's full 12-s protocol.
 `plot_CRN.m` documents the log column map.
 
-## Units — read this before editing the deck
+## Units
 
-The three human myocyte models in this solver use **three different unit
-systems**. Stimulus blocks, time steps and conductivities are *not*
-portable between their decks:
+Clock in **ms**; currents are **absolute pA** (the paper's pA/pF
+densities multiplied by `Cm = 100 pF` at the point of use), so
+`dV/dt = -ΣI/Cm` is in pA/pF = mV/ms and the stimulus amplitude is
+absolute pA — **not** the pA/pF density a TTP deck uses.
 
-|                    | **CRN** (this)   | **NYG**        | **TTP**            |
-|--------------------|------------------|----------------|--------------------|
-| time base          | **ms**           | **s**          | ms                 |
-| currents           | absolute pA      | absolute pA    | densities pA/pF    |
-| Cm                 | 100 pF           | 0.05 nF        | 0.185 µF           |
-| dV/dt              | −ΣI/Cm           | −ΣI/Cm         | −ΣI (no Cm)        |
-| stimulus amplitude | **pA**           | **pA**         | **pA/pF**          |
-| example deck       | −2000, dt 0.005  | −280, dt 1e−4  | −38, dt 0.1–0.2    |
+These are the paper's own units, kept internally consistent with the
+original formulation rather than rescaled to a common system. Because
+the CEP models each do this, stimulus blocks and time steps are not
+portable between decks — see [`../README_CEP_UNITS.md`](../README_CEP_UNITS.md).
 
-Why: `pA/pF = mV/ms` fixes CRN's clock to milliseconds, `pA/nF = mV/s`
-fixes NYG's to seconds, and TTP's currents are already densities
-(= mV/ms) so its dV/dt carries no Cm at all. A TTP amplitude of −38 is a
-*density* (≈ −3800 pA absolute); the −2000 here is absolute pA. For
-tissue simulation, conductivity follows the clock: mm²/ms for CRN vs
-mm²/s for NYG.
-
-CRN must stay in absolute pA: Eq. 68's `Fn` thresholds (SR release
+CRN must stay in absolute pA: Eq. 68's `Fn` thresholds (the SR release
 trigger) only fire with absolute currents — a pA/pF port silently
-disables calcium release. Details: `include/PARAMS_CRN.f` (UNIT SYSTEM
-block) and the `Fn_rel_scale` comment there for the one deliberate
-deviation from the published equations (openCARP's Fig. 15 encoding,
-default 0.01; set 1.0 in `params_crn.in` for Eq. 68 as published).
+disables calcium release. The one deliberate deviation from the
+published equations is `Fn_rel_scale`, needed to reproduce the paper's
+Fig. 15 (default `0.01`; set `1.0` in `params_crn.in` for Eq. 68 as
+published). Both are documented in `include/PARAMS_CRN.f`.
 
 ## Figures
 

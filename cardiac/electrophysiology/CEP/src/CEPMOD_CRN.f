@@ -18,14 +18,15 @@
 !     h, j, d, f, f_Ca, xr, xs, oa, oi, ua, ui, u, v, w by the
 !     Rush-Larsen exponential update.
 !
-!     UNITS: millisecond clock, currents in ABSOLUTE pA (densities
-!     multiplied by Cm = 100 pF at use), so dV/dt = -(SUM I)/Cm is in
-!     pA/pF = mV/ms.  This differs from both NYG (seconds, pA/nF =
-!     mV/s) and TTP (densities pA/pF, no Cm in dV/dt); the stimulus
-!     amplitude here is absolute pA, NOT the pA/pF density a TTP deck
-!     uses.  See the UNIT SYSTEM block in PARAMS_CRN.f for the full
-!     cross-model table.  Do not convert this module to TTP-style
-!     densities: Eq. 68's Fn thresholds require absolute pA, and a
+!     UNITS: millisecond clock, currents in ABSOLUTE pA (the paper's
+!     densities multiplied by Cm = 100 pF at use), so
+!     dV/dt = -(SUM I)/Cm is in pA/pF = mV/ms.  The stimulus amplitude
+!     is therefore absolute pA, not the pA/pF density a TTP deck uses.
+!     See the UNIT SYSTEM block in PARAMS_CRN.f, and
+!     example/README_CEP_UNITS.md for the cross-model table.
+!
+!     CAUTION: this module should not be converted to TTP-style
+!     densities.  Eq. 68's Fn thresholds require absolute pA, and a
 !     density formulation silently disables SR release.
 !
 !-----------------------------------------------------------------------
@@ -328,9 +329,9 @@
       I_up_leak = Ca_up / Ca_up_max * I_up_max
 
 !     Fn: Ca release flux trigger (Eq. 68).  Fn_rel_scale scales the
-!     RELEASE term only: 1.0 = Eq. 68 as published, 0.01 = openCARP's
-!     C_Fn1 (the default).  See PARAMS_CRN.f.  The currents here are
-!     absolute pA, deliberately.
+!     RELEASE term only: 1.0 = Eq. 68 as published, 0.01 (the default)
+!     reproduces the paper's Fig. 15.  See PARAMS_CRN.f.  The currents
+!     here are absolute pA, deliberately.
       Fn     = Fn_rel_scale * 1.E-12_RKIND * Vol_rel * I_rel
      2       - (5.E-13_RKIND/F)
      3       * (0.5_RKIND*I_CaL - 0.2_RKIND*I_NaCa)

@@ -1,14 +1,10 @@
-
 # Courtemanche-Ramirez-Nattel (1998) human atrial myocyte model.
 #
-# NOTE ON UNITS -- the three human myocyte models in this solver use
-# three different unit systems, so do NOT copy stimulus blocks or
-# time steps between decks:
-#   CRN (this deck): clock in ms;      stimulus amplitude in pA
-#   NYG:             clock in SECONDS; stimulus amplitude in pA
-#   TTP:             clock in ms;      stimulus amplitude in pA/pF
-# (a TTP amplitude of -38 is a density, roughly -3800 pA absolute;
-# the -2000 below is absolute pA).  Full table: include/PARAMS_CRN.f.
+# UNITS: this deck's clock is in ms and its currents are ABSOLUTE, so
+# the stimulus amplitude below is in pA (-2000 pA = -2 nA), not the
+# pA/pF density a TTP deck uses.  The CEP models do not share a unit
+# system -- do not copy stimulus blocks or time steps between decks.
+# Table: ../README_CEP_UNITS.md
 #
 # The protocol below reproduces the paper's Figs. 14/15 beat: 2-ms,
 # -2 nA (twice diastolic threshold) pulses at a period of 1000 ms.
