@@ -14,10 +14,10 @@ decks point here rather than repeat it.
 | model | keyword | clock | currents | `Cm` | `dV/dt` | stimulus amplitude | example deck |
 |---|---|---|---|---|---|---|---|
 | Aliev–Panfilov | `ap` | ms | — dimensionless | 1, unused | dimensionless, rescaled by `Vscale` / `Tscale` / `Voffset` | mV/ms | `52.0`, dt `0.2` |
-| Bueno-Orovio | `bo` | ms | — dimensionless | 1, unused | dimensionless, rescaled by `Vscale` / `Voffset` | mV/ms | `-38.0`, dt `0.1` |
+| Bueno-Orovio | `bo` | ms | — dimensionless | 1, unused | dimensionless, rescaled by `Vscale` / `Tscale` / `Voffset` | mV/ms | `-38.0`, dt `0.1` |
 | FitzHugh–Nagumo | `fn` | deck's unit | — dimensionless | none | fully dimensionless | model units | `0.0`, dt `0.01` |
-| ten Tusscher–Panfilov | `ttp` | ms | densities **pA/pF** | 0.185 µF | −Σ I (no `Cm`) | **pA/pF** | `-38.0`, dt `0.2` |
-| Stewart Purkinje | `pfib` | ms | densities **pA/pF** | 0.185 µF | −Σ I (no `Cm`) | **pA/pF** | `-38.0`, dt `0.2` |
+| ten Tusscher–Panfilov | `ttp` | ms | densities **pA/pF** | 0.185 | −Σ I (no `Cm`) | **pA/pF** | `-38.0`, dt `0.2` |
+| Stewart Purkinje | `pfib` | ms | densities **pA/pF** | 0.185 | −Σ I (no `Cm`) | **pA/pF** | `-38.0`, dt `0.2` |
 | Tong uterine | `tong` | ms | densities **pA/pF** | 1 µF/cm² | −Σ I (no `Cm`) | **pA/pF** | `-0.2` … `-0.5`, dt `1.0` / `0.2` |
 | Nygren atrial | `nyg` | **s** | absolute **pA** | 0.05 **nF** | −Σ I / `Cm` | **pA** | `-280.0`, dt `1e-4` |
 | Courtemanche–Ramirez–Nattel | `crn` | ms | absolute **pA** | 100 **pF** | −Σ I / `Cm` | **pA** | `-2000.0`, dt `0.005` |
@@ -45,7 +45,9 @@ paper, which is why the values are not rescaled to a common system.
   multiplies it into the Table 1 conductances to turn densities into
   absolute currents.
 - **TTP, PFIB, TONG** — appears only in the concentration updates, never
-  in `dV/dt`.
+  in `dV/dt`. (`PARAMS_TTP.f` annotates its `Cm = 0.185` as µF/cm²
+  while noting the CellML source gives 0.185 µF; the value is used as
+  CellML defines it.)
 - **AP, BO** — read from the parameters file and then never used by the
   single-cell equations. It is there for the tissue solver, which needs
   `Cm`, `sV` and `rho` to form the monodomain conductivity.
@@ -57,9 +59,9 @@ A TTP amplitude of `-38` is a *density* — roughly −3800 pA absolute for a
 deck and you are off by about two orders of magnitude.
 
 Copying NYG's `Time step size: 0.0001` (seconds) into a CRN deck is worse:
-CRN reads it as 0.0001 **ms**, so the run is 10 000× shorter than
-intended and the 0.006 stimulus lasts 6 µs instead of 6 ms. It will not
-error — it produces a flat trace.
+NYG means 0.1 ms, but CRN reads the bare number as 0.0001 ms, so each
+step is 1000× too small and the 0.006 stimulus lasts 6 µs instead of
+6 ms. It will not error — it produces a flat trace.
 
 For tissue simulation the conductivity follows the clock too: mm²/ms for
 the millisecond models, mm²/s for NYG.
